@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: device-service
+spec:
+  template:
+    metadata:
+      name: device-pod
+      labels:
+        app: myapp
+        type: device-api
+
+    spec:
+      containers:
+        - name: device-app
+          image: device-app:v1
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://kube-device-db:3310/db-device-service?serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: device-api
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: device-service
+spec:
+  selector:
+    app: myapp
+    type: device-api
+  type: ClusterIP
+  ports:
+     - port: 8082
+       targetPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-device
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 8082
+      port: 80
+      nodePort: 30007
+  selector:
+    app: myapp
+    type: device-api      

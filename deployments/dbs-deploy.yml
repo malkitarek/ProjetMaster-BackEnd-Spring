@@ -1,0 +1,175 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-auth-deploy
+spec:
+  template:
+    metadata:
+      name: db-auth-pod
+      labels:
+        app: myapp
+        type: mysql-auth-db
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: "MYSQL_DATABASE"
+              value: "db-auth"
+            - name: "MYSQL_ROOT_PASSWORD"
+              value: "root"
+            - name: "MYSQL_ROOT_USER"
+              value: "root"
+          ports:
+            - containerPort: 3306
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: mysql-auth-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-auth-db
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3306
+      port: 3307
+  selector:
+    app: myapp
+    type: mysql-auth-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-suivi-deploy
+spec:
+  template:
+    metadata:
+      name: db-suivi-pod
+      labels:
+        app: myapp
+        type: mysql-suivi-db
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: "MYSQL_DATABASE"
+              value: "db-suivi-patient"
+            - name: "MYSQL_ROOT_PASSWORD"
+              value: "root"
+            - name: "MYSQL_ROOT_USER"
+              value: "root"
+          ports:
+            - containerPort: 3306
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: mysql-suivi-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-suivi-db
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3306
+      port: 3308
+  selector:
+    app: myapp
+    type: mysql-suivi-db  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-communication-deploy
+spec:
+  template:
+    metadata:
+      name: db-communication-pod
+      labels:
+        app: myapp
+        type: mysql-communication-db
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: "MYSQL_DATABASE"
+              value: "db-communication-service"
+            - name: "MYSQL_ROOT_PASSWORD"
+              value: "root"
+            - name: "MYSQL_ROOT_USER"
+              value: "root"
+          ports:
+            - containerPort: 3306
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: mysql-communication-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-communication-db
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3306
+      port: 3309
+  selector:
+    app: myapp
+    type: mysql-communication-db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-device-deploy
+spec:
+  template:
+    metadata:
+      name: db-device-pod
+      labels:
+        app: myapp
+        type: mysql-device-db
+
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: "MYSQL_DATABASE"
+              value: "db-device-service"
+            - name: "MYSQL_ROOT_PASSWORD"
+              value: "root"
+            - name: "MYSQL_ROOT_USER"
+              value: "root"
+          ports:
+            - containerPort: 3306
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: mysql-device-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-device-db
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 3306
+      port: 3310
+  selector:
+    app: myapp
+    type: mysql-device-db

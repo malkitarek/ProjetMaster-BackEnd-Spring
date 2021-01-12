@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-deploy
+spec:
+  template:
+    metadata:
+      name: eureka-pod
+      labels:
+        app: myapp
+        type: eureka-api
+
+    spec:
+      containers:
+        - name: eureka-app
+          image: eurka-app:v1
+          ports:
+            - containerPort: 8761
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: eureka-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-eureka
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 8761
+      port: 8761
+  selector:
+    app: myapp
+    type: eureka-api

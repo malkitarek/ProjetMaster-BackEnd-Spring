@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suivi-patient-service
+spec:
+  template:
+    metadata:
+      name: suivi-patient-pod
+      labels:
+        app: myapp
+        type: suivi-patient-api
+
+    spec:
+      containers:
+        - name: suivi-patient-app
+          image: suivi-patient-app:v2
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://kube-suivi-db:3308/db-suivi-patient?serverTimezone=UTC
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: suivi-patient-api
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: suivi-patient-service
+spec:
+  selector:
+    app: myapp
+    type: suivi-patient-api
+  type: ClusterIP
+  ports:
+     - port: 8081
+       targetPort: 8081

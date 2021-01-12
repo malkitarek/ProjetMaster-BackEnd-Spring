@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-admin-deploy
+spec:
+  template:
+    metadata:
+      name: front-admin-pod
+      labels:
+        app: myapp
+        type: front-admin-api
+
+    spec:
+      containers:
+        - name: front-admin-app
+          image: front-admin-app:v1
+          ports:
+            - containerPort: 8001
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+      type: front-admin-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api2-service
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 8001
+      port: 8089
+      nodePort: 30009
+  selector:
+    app: myapp
+    type: front-admin-api
